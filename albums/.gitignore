@@ -62,3 +62,7 @@ typings/
 
 # react-native iOS build
 ios/build
+
+# DS_Store
+.DS_Store
+../.DS_Store
