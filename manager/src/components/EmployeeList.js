@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import React, { Component } from 'react';
-import { ListView } from 'react-native';
+import { FlatList } from 'react-native';
 import { connect } from 'react-redux';
 import { employeeFetch } from '../actions/EmployeeActions';
 import ListItem from './ListItem';
@@ -8,40 +8,29 @@ import ListItem from './ListItem';
 class EmployeeList extends Component {
   componentWillMount() {
     this.props.employeeFetch();
-    this.createDataSource(this.props);
   }
 
-  componentWillReceiveProps(nextProps) {
-    this.createDataSource(nextProps);
-  }
+  keyExtractor = (item) => item.uid;
 
-  createDataSource({ employees }) {
-    const ds = new ListView.DataSource({
-      rowHasChanged: (r1, r2) => r1 !== r2
-    });
-
-    this.dataSource = ds.cloneWithRows(employees);
-  }
-
-  renderRow(employee) {
-    return <ListItem employee={employee} />;
+  renderItem(employee) {
+    return <ListItem employee={employee.item} />;
   }
 
   render() {
     return (
-      <ListView 
-        enableEmptySections
-        dataSource={this.dataSource}
-        renderRow={this.renderRow}
+      <FlatList
+        data={this.props.employees}
+        keyExtractor={this.keyExtractor}
+        renderItem={this.renderItem}
       />
     );
   }
 }
 
 const mapStateToProps = state => {
-  const employees = _.map(state.employees, (val, uid) => {
+  const employees = _.values(_.map(state.employees, (val, uid) => {
     return { ...val, uid };
-  });
+  }));
 
   return { employees };
 };
